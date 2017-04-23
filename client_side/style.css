@@ -1,0 +1,35 @@
+ul {
+	list-style-type: none;
+}
+
+.cl_select_sequence {
+	background-color: lightblue;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.cl_select_sequence:hover {
+	background-color: lightgreen;
+}
+
+.cl_select_sequence span {
+	display: inline-block;
+}
+
+.cl_mutated_residue {
+	margin: 5px;
+}
+
+.cl_font_bold {
+	font-weight: bold;
+}
+
+.cl_display_block {
+	display: block;
+}
+.cl_display_none {
+	display: none;
+}
+.cl_display_inline {
+	display: inline;
+}
+
