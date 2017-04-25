@@ -16,10 +16,6 @@ gui_stuff* gui_stuff_new() {
 	result->admin_menu_choices[0] = new_item( "Clear the logs", "" );
 	set_item_userptr( result->admin_menu_choices[0], (void*) ( result->admin_menu_user_data ) );
 
-	result->admin_menu_user_data[1] = ADMIN_IMPORT_SIFTS;
-	result->admin_menu_choices[1] = new_item( "Import SIFTS", "" );
-	set_item_userptr( result->admin_menu_choices[1], (void*) ( result->admin_menu_user_data + 1 ) );
-
 	result->admin_menu_user_data[2] = ADMIN_RELOAD_CONFIGURATION;
 	result->admin_menu_choices[2] = new_item( "Reload configuration", "" );
 	set_item_userptr( result->admin_menu_choices[2], (void*) ( result->admin_menu_user_data + 2 ) );
@@ -50,11 +46,6 @@ void gui_stuff_update( gui_stuff* gui ) {
 	gui->admin_rectangle.column = 25;
 	gui->admin_rectangle.height = gui->half_height - 1;
 	gui->admin_rectangle.width = gui->half_width - 25 - 1;
-
-	gui->import_sifts_rectangle.row = gui->half_height + 1;
-	gui->import_sifts_rectangle.column = 0;
-	gui->import_sifts_rectangle.height = gui->half_height - 1;
-	gui->import_sifts_rectangle.width = gui->half_width - 1;
 
 	gui->socket_rectangle.row = 0;
 	gui->socket_rectangle.column = gui->half_width + 1;
@@ -171,7 +162,7 @@ void show_text( rectangle* area, thread_context* context ) {
 	pthread_mutex_unlock( &(context->text_mutex) );
 }
 
-void draw( gui_stuff* gui, thread_context* admin_context, thread_context* import_sifts_context, thread_context* socket_context, thread_context* task_context ) {
+void draw( gui_stuff* gui, thread_context* admin_context, thread_context* socket_context, thread_context* task_context ) {
 //*** Display the menu
 	post_menu( gui->admin_menu );
 
@@ -183,9 +174,6 @@ void draw( gui_stuff* gui, thread_context* admin_context, thread_context* import
 
 //*** Show the text from the amdin manager
 	show_text( &(gui->admin_rectangle), admin_context );
-
-//*** Show the text from the import SIFTS thread
-	show_text( &(gui->import_sifts_rectangle), import_sifts_context );
 
 //*** Show the text from the socket manager thread
 	show_text( &(gui->socket_rectangle), socket_context );

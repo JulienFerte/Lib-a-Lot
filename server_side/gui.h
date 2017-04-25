@@ -9,7 +9,6 @@
 #define ADMIN_NONE					0
 #define ADMIN_EXIT					1
 #define ADMIN_CLEAR_LOGS			2
-#define ADMIN_IMPORT_SIFTS			3
 #define ADMIN_RELOAD_CONFIGURATION	4
 
 typedef struct {
@@ -29,7 +28,6 @@ typedef struct {
 	int three_quarter_width;
 
 	rectangle admin_rectangle;
-	rectangle import_sifts_rectangle;
 	rectangle socket_rectangle;
 	rectangle task_rectangle;
 
@@ -46,7 +44,7 @@ void gui_stuff_free( gui_stuff* );
 void fill_blanks( int, int, int );
 void show_text( rectangle*, thread_context* );
 
-void draw( gui_stuff*, thread_context*, thread_context*, thread_context*, thread_context* );
+void draw( gui_stuff*, thread_context*, thread_context*, thread_context* );
 
 list* add_text( thread_context*, const char* );
 list* add_text_end( thread_context*, const char* );

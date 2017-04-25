@@ -127,15 +127,8 @@ void configuration_load( configuration_struct* configuration ) {
 
 	configuration->module_array = NULL;
 
-	configuration->path_sifts = NULL;
-	configuration->path_fasta = NULL;
-	configuration->path_pdb = NULL;
-	configuration->path_mmtf = NULL;
-	configuration->path_mmcif = NULL;
-
 	configuration->log_admin = NULL;
 	configuration->log_libalot = NULL;
-	configuration->log_protmutlibalot = NULL;
 	configuration->log_mysql = NULL;
 	configuration->log_engine = NULL;
 
@@ -143,7 +136,6 @@ void configuration_load( configuration_struct* configuration ) {
 	xmlChar* xml_configuration = xmlCharStrdup( "configuration" );
 	xmlChar* xml_log = xmlCharStrdup( "log" );
 	xmlChar* xml_libalot = xmlCharStrdup( "libalot" );
-	xmlChar* xml_protmutlibalot = xmlCharStrdup( "protmutlibalot" );
 	xmlChar* xml_admin = xmlCharStrdup( "admin" );
 	xmlChar* xml_servers = xmlCharStrdup( "servers" );
 	xmlChar* xml_mysql = xmlCharStrdup( "mysql" );
@@ -163,18 +155,6 @@ void configuration_load( configuration_struct* configuration ) {
 	xmlChar* xml_path = xmlCharStrdup( "path" );
 	xmlChar* xml_need = xmlCharStrdup( "need" );
 	xmlChar* xml_exec = xmlCharStrdup( "exec" );
-	xmlChar* xml_sources = xmlCharStrdup( "sources" );
-	xmlChar* xml_matching = xmlCharStrdup( "matching" );
-	xmlChar* xml_sifts = xmlCharStrdup( "sifts" );
-	xmlChar* xml_address = xmlCharStrdup( "address" );
-	xmlChar* xml_sequence = xmlCharStrdup( "sequence" );
-	xmlChar* xml_fasta = xmlCharStrdup( "fasta" );
-	xmlChar* xml_structure = xmlCharStrdup( "structure" );
-	xmlChar* xml_pdb = xmlCharStrdup( "pdb" );
-	xmlChar* xml_mmtf = xmlCharStrdup( "mmtf" );
-	xmlChar* xml_mmcif = xmlCharStrdup( "mmcif" );
-	xmlChar* xml_begin = xmlCharStrdup( "begin" );
-	xmlChar* xml_end = xmlCharStrdup( "end" );
 
 	char* error;
 	char* value = NULL;
@@ -207,13 +187,6 @@ void configuration_load( configuration_struct* configuration ) {
 							log_names_files_free( configuration->log_libalot );
 						}
 						configuration->log_libalot = log_names_files_new( child2 );
-					}
-
-					if( xmlStrcmp( child2->name, xml_protmutlibalot ) == 0 ) {
-						if( configuration->log_protmutlibalot != NULL ) {
-							log_names_files_free( configuration->log_protmutlibalot );
-						}
-						configuration->log_protmutlibalot = log_names_files_new( child2 );
 					}
 
 					if( xmlStrcmp( child2->name, xml_mysql ) == 0 ) {
@@ -398,132 +371,10 @@ void configuration_load( configuration_struct* configuration ) {
 					}
 				}
 			}
-
-			if( xmlStrcmp( child->name, xml_sources ) == 0 ) {
-
-//*** We are in the node "sources"
-				for( child2 = child->children; child2 != NULL; child2 = child2->next ) {
-
-					if( xmlStrcmp( child2->name, xml_matching ) == 0 ) {
-						for( child3 = child2->children; child3 != NULL; child3 = child3->next ) {
-							if( xmlStrcmp( child3->name, xml_sifts ) == 0 ) {
-
-//*** Get the properties begin and end from the XML document
-								char* address = NULL;
-								getXmlNodeProperty( child3, xml_address, &address );
-
-//*** Create the formatting string
-								size_t address_length = strlen( address );
-								configuration->path_sifts = malloc( sizeof( char ) * ( address_length + 1 ) );
-								strncpy( configuration->path_sifts, address, address_length );
-								configuration->path_sifts[ address_length ] = '\0';
-
-								free( address );
-							}
-						}
-					}
-
-					if( xmlStrcmp( child2->name, xml_sequence ) == 0 ) {
-						for( child3 = child2->children; child3 != NULL; child3 = child3->next ) {
-							if( xmlStrcmp( child3->name, xml_fasta ) == 0 ) {
-
-//*** Get the properties begin and end from the XML document
-								char* begin = NULL;
-								char* end = NULL;
-								getXmlNodeProperty( child3, xml_begin, &begin );
-								getXmlNodeProperty( child3, xml_end, &end );
-
-//*** Create the formatting string
-								size_t path_length = strlen( begin ) + 3 + strlen( end );
-//*** 3 is needed instead of 2, the "%%" is counted at 2 characters even though it shows only as '%'
-								configuration->path_fasta = malloc( sizeof( char ) * ( path_length + 1 ) );
-								snprintf( configuration->path_fasta, path_length, "%s%%s%s", begin, end );
-								configuration->path_fasta[ path_length ] = '\0';
-
-								free( begin );
-								free( end );
-							}
-						}
-					}
-
-					if( xmlStrcmp( child2->name, xml_structure ) == 0 ) {
-						for( child3 = child2->children; child3 != NULL; child3 = child3->next ) {
-							if( xmlStrcmp( child3->name, xml_pdb ) == 0 ) {
-
-//*** Get the properties begin and end from the XML document
-								char* begin = NULL;
-								char* end = NULL;
-								getXmlNodeProperty( child3, xml_begin, &begin );
-								getXmlNodeProperty( child3, xml_end, &end );
-
-//*** Create the formatting string
-								size_t path_length = strlen( begin ) + 3 + strlen( end );
-
-								configuration->path_pdb = malloc( sizeof( char ) * ( path_length + 1 ) );
-								snprintf( configuration->path_pdb, path_length, "%s%%s%s", begin, end );
-								configuration->path_pdb[ path_length ] = '\0';
-
-								free( begin );
-								free( end );
-							}
-
-							if( xmlStrcmp( child3->name, xml_mmtf ) == 0 ) {
-
-//*** Get the properties begin and end from the XML document
-								char* begin = NULL;
-								char* end = NULL;
-								getXmlNodeProperty( child3, xml_begin, &begin );
-								getXmlNodeProperty( child3, xml_end, &end );
-
-//*** Create the formatting string
-								size_t path_length = strlen( begin ) + 3 + strlen( end );
-
-								configuration->path_mmtf = malloc( sizeof( char ) * ( path_length + 1 ) );
-								snprintf( configuration->path_mmtf, path_length, "%s%%s%s", begin, end );
-								configuration->path_mmtf[ path_length ] = '\0';
-
-								free( begin );
-								free( end );
-							}
-
-							if( xmlStrcmp( child3->name, xml_mmcif ) == 0 ) {
-
-//*** Get the properties begin and end from the XML document
-								char* begin = NULL;
-								char* end = NULL;
-								getXmlNodeProperty( child3, xml_begin, &begin );
-								getXmlNodeProperty( child3, xml_end, &end );
-
-//*** Create the formatting string
-								size_t path_length = strlen( begin ) + 3 + strlen( end );
-
-								configuration->path_mmcif = malloc( sizeof( char ) * ( path_length + 1 ) );
-								snprintf( configuration->path_mmcif, path_length, "%s%%s%s", begin, end );
-								configuration->path_mmcif[ path_length ] = '\0';
-
-								free( begin );
-								free( end );
-							}
-						}
-					}
-				}
-			}
 		}
 	}
 
 //*** Remove all the names needed beforehand
-	xmlFree( xml_end );
-	xmlFree( xml_begin );
-	xmlFree( xml_mmcif );
-	xmlFree( xml_mmtf );
-	xmlFree( xml_pdb );
-	xmlFree( xml_structure );
-	xmlFree( xml_fasta );
-	xmlFree( xml_sequence );
-	xmlFree( xml_address );
-	xmlFree( xml_sifts );
-	xmlFree( xml_matching );
-	xmlFree( xml_sources );
 	xmlFree( xml_exec );
 	xmlFree( xml_need );
 	xmlFree( xml_path );
@@ -544,7 +395,6 @@ void configuration_load( configuration_struct* configuration ) {
 	xmlFree( xml_servers );
 	xmlFree( xml_log );
 	xmlFree( xml_libalot );
-	xmlFree( xml_protmutlibalot );
 	xmlFree( xml_admin );
 	xmlFree( xml_configuration );
 
@@ -570,23 +420,10 @@ void configuration_unload( configuration_struct* configuration ) {
 		free( configuration->module_array );
 	}
 
-	if( configuration->path_sifts != NULL )
-		free( configuration->path_sifts );
-	if( configuration->path_fasta != NULL )
-		free( configuration->path_fasta );
-	if( configuration->path_pdb != NULL )
-		free( configuration->path_pdb );
-	if( configuration->path_mmtf != NULL )
-		free( configuration->path_mmtf );
-	if( configuration->path_mmcif != NULL )
-		free( configuration->path_mmcif );
-
 	if( configuration->log_admin != NULL )
 		log_names_files_free( configuration->log_admin );
 	if( configuration->log_libalot != NULL )
 		log_names_files_free( configuration->log_libalot );
-	if( configuration->log_protmutlibalot != NULL )
-		log_names_files_free( configuration->log_protmutlibalot );
 	if( configuration->log_mysql != NULL )
 		log_names_files_free( configuration->log_mysql );
 	if( configuration->log_engine != NULL )
@@ -602,15 +439,8 @@ void configuration_unload( configuration_struct* configuration ) {
 
 	configuration->module_array = NULL;
 
-	configuration->path_sifts = NULL;
-	configuration->path_fasta = NULL;
-	configuration->path_pdb = NULL;
-	configuration->path_mmtf = NULL;
-	configuration->path_mmcif = NULL;
-
 	configuration->log_admin = NULL;
 	configuration->log_libalot = NULL;
-	configuration->log_protmutlibalot = NULL;
 	configuration->log_mysql = NULL;
 	configuration->log_engine = NULL;
 }

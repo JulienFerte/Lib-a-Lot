@@ -26,10 +26,6 @@ bool clear_log_file( configuration_struct* configuration, unsigned int id ) {
 				file_name = configuration->log_libalot->event_name;
 				file_handle = &(configuration->log_libalot->event_file);
 			break;
-		case LOG_PROTMUTLIBALOT_EVENT :
-				file_name = configuration->log_protmutlibalot->event_name;
-				file_handle = &(configuration->log_protmutlibalot->event_file);
-			break;
 		case LOG_MYSQL_EVENT :
 				file_name = configuration->log_mysql->event_name;
 				file_handle = &(configuration->log_mysql->event_file);
@@ -46,10 +42,6 @@ bool clear_log_file( configuration_struct* configuration, unsigned int id ) {
 		case LOG_LIBALOT_ERROR :
 				file_name = configuration->log_libalot->error_name;
 				file_handle = &(configuration->log_libalot->error_file);
-			break;
-		case LOG_PROTMUTLIBALOT_ERROR :
-				file_name = configuration->log_protmutlibalot->error_name;
-				file_handle = &(configuration->log_protmutlibalot->error_file);
 			break;
 		case LOG_MYSQL_ERROR :
 				file_name = configuration->log_mysql->error_name;
@@ -96,9 +88,6 @@ void write_log( configuration_struct* configuration, unsigned int id, const char
 		case LOG_LIBALOT_EVENT :
 			log_file = configuration->log_libalot->event_file;
 			break;
-		case LOG_PROTMUTLIBALOT_EVENT :
-			log_file = configuration->log_protmutlibalot->event_file;
-			break;
 		case LOG_MYSQL_EVENT :
 			log_file = configuration->log_mysql->event_file;
 			break;
@@ -111,9 +100,6 @@ void write_log( configuration_struct* configuration, unsigned int id, const char
 			break;
 		case LOG_LIBALOT_ERROR :
 			log_file = configuration->log_libalot->error_file;
-			break;
-		case LOG_PROTMUTLIBALOT_ERROR :
-			log_file = configuration->log_protmutlibalot->error_file;
 			break;
 		case LOG_MYSQL_ERROR :
 			log_file = configuration->log_mysql->error_file;
@@ -133,10 +119,6 @@ void write_log( configuration_struct* configuration, unsigned int id, const char
 				log_file = stdout;
 				fprintf( log_file, "No Lib-a-Lot event log file. " );
 				break;
-			case LOG_PROTMUTLIBALOT_EVENT :
-				log_file = stdout;
-				fprintf( log_file, "No ProtMutLib-a-Lot event log file. " );
-				break;
 			case LOG_MYSQL_EVENT :
 				log_file = stdout;
 				fprintf( log_file, "No MySQL event log file. " );
@@ -153,10 +135,6 @@ void write_log( configuration_struct* configuration, unsigned int id, const char
 			case LOG_LIBALOT_ERROR :
 				log_file = stderr;
 				fprintf( log_file, "No Lib-a-Lot error log file. " );
-				break;
-			case LOG_PROTMUTLIBALOT_ERROR :
-				log_file = stderr;
-				fprintf( log_file, "No ProtMutLib-a-Lot error log file. " );
 				break;
 			case LOG_MYSQL_ERROR :
 				log_file = stderr;

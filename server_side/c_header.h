@@ -11,7 +11,6 @@
 #include "main.h"
 #include "module_context.h"
 #include "mysql_connection_common.h"
-#include "proteomics/c_header.h"
 #include "sized_string.h"
 #include "socket_manager.h"
 #include "string.h"

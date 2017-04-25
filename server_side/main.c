@@ -91,18 +91,6 @@ int main(int argc, char** argv ) {
 		return 1;
 	}
 
-//*** Prepare everything for launching the thread importing the SIFTS database
-	int put_sifts_into_database_thread_flag = THREAD_NOT_LAUNCHED;
-	thread_context context_update_sifts = {	.configuration = &configuration,
-											.task_fifo_mutex = &task_fifo_mutex,
-											.task_fifo_emptiness_semaphore = &task_fifo_emptiness_semaphore,
-											.task_fifo = task_fifo, .running = &running,
-											.flag = &put_sifts_into_database_thread_flag,
-											.title = NULL,
-											.text = list_new() };
-	pthread_mutex_init( &(context_update_sifts.text_mutex), NULL );
-	pthread_t put_sifts_into_database_thread_id;
-
 //*** Prepare everything for launching the thread clearing the log files
 	int clear_log_thread_flag = THREAD_NOT_LAUNCHED;
 	thread_context context_clear_log = {	.configuration = &configuration,
@@ -148,35 +136,6 @@ int main(int argc, char** argv ) {
 						write_log( &configuration, LOG_ADMIN_EVENT, "Logs cleared" );
 						add_text( &context_admin, "Logs cleared" );
 						break;
-//*** For updating the database
-					case ADMIN_IMPORT_SIFTS:;
-						switch( put_sifts_into_database_thread_flag ) {
-							case THREAD_RUNNING:;
-								add_text( &context_admin, "The thread putting SIFTS into the database is still running" );
-								break;
-							case THREAD_WAITING_JOIN:;
-								if( pthread_join( put_sifts_into_database_thread_id, NULL ) ) {
-									error_number = errno;
-									write_log( &configuration, LOG_ADMIN_ERROR, "Error when calling %s, in %s at line %i: can't join the thread putting SIFTS into the database, error message: \"%s\"",
-																				__FUNCTION__, __FILE__, __LINE__, strerror( error_number ) );
-								}
-								else {
-									add_text( &context_admin, "Successfully joined the thread putting SIFTS into the database" );
-								}
-							case THREAD_NOT_LAUNCHED:;
-								if( pthread_create( &put_sifts_into_database_thread_id, NULL, put_sifts_into_database, &context_update_sifts ) ) {
-									error_number = errno;
-									write_log( &configuration, LOG_ADMIN_ERROR, "Error when calling %s, in %s at line %i: can't launch the thread putting SIFTS into the database, error message: \"%s\"",
-																				__FUNCTION__, __FILE__, __LINE__, strerror( error_number ) );
-								}
-								else {
-									put_sifts_into_database_thread_flag = THREAD_RUNNING;
-									write_log( &configuration, LOG_ADMIN_EVENT, "Launched the thread putting the SIFTS database into the local database" );
-									add_text( &context_admin, "Importing SIFTS" );
-								}
-								break;
-						}
-						break;
 //*** For reloading the configuration file
 					case ADMIN_RELOAD_CONFIGURATION:;
 						configuration_reload( &configuration );
@@ -188,7 +147,7 @@ int main(int argc, char** argv ) {
 		}
 
 //*** Drawing and refreshing
-		draw( gui, &context_admin, &context_update_sifts, &context_socket, &context_task );
+		draw( gui, &context_admin, &context_socket, &context_task );
 		refresh();
 	}
 
@@ -211,25 +170,6 @@ int main(int argc, char** argv ) {
 		return 1;
 	}
 
-//*** Terminate the thread importing SIFTS if it was launched
-	switch( put_sifts_into_database_thread_flag ) {
-		case THREAD_RUNNING:;
-			write_log( &configuration, LOG_LIBALOT_EVENT, "The thread putting SIFTS into the database is still running, killing it" );
-			add_text( &context_admin, "The thread putting SIFTS into the database is still running, killing it\n" );
-			pthread_kill( put_sifts_into_database_thread_id, 0 );
-			write_log( &configuration, LOG_LIBALOT_EVENT, "Killed the thread putting SIFTS into the database" );
-			add_text( &context_admin, "Killed the thread putting SIFTS into the database\n" );
-			break;
-		case THREAD_WAITING_JOIN:;
-			if( pthread_join( put_sifts_into_database_thread_id, NULL ) ) {
-				error_number = errno;
-				write_log( &configuration, LOG_ADMIN_ERROR, "Error when calling %s, in %s at line %i: can't join the thread putting SIFTS into the database, error message: \"%s\"", __FUNCTION__, __FILE__, __LINE__, strerror( error_number ) );
-			}
-			break;
-		case THREAD_NOT_LAUNCHED:;
-			break;
-	}
-
 //*** Unloading the configuration file .LibALot.conf
 	configuration_unload( &configuration );
 
@@ -243,7 +183,6 @@ int main(int argc, char** argv ) {
 	pthread_mutex_destroy( &(context_admin.text_mutex) );
 	pthread_mutex_destroy( &(context_task.text_mutex) );
 	pthread_mutex_destroy( &(context_socket.text_mutex) );
-	pthread_mutex_destroy( &(context_update_sifts.text_mutex) );
 	pthread_mutex_destroy( &(context_clear_log.text_mutex) );
 
 	list_destroy( task_fifo );

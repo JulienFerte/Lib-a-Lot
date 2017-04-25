@@ -53,17 +53,9 @@ typedef struct configuration_struct_tag {
 	size_t module_count;
 	module** module_array;
 
-//*** For fetching files from the internet
-	char* path_sifts;
-	char* path_fasta;
-	char* path_pdb;
-	char* path_mmtf;
-	char* path_mmcif;
-
 //*** The log files
 	log_names_files* log_admin;
 	log_names_files* log_libalot;
-	log_names_files* log_protmutlibalot;
 	log_names_files* log_mysql;
 	log_names_files* log_engine;
 } configuration_struct;
